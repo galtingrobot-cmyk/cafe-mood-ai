@@ -189,262 +189,261 @@ export default function ChatPage() {
 
   return (
     <>
-    <div className="flex flex-col min-h-[calc(100dvh-4rem)] bg-[#FAFAF8]">
+      <div className="flex flex-col min-h-[calc(100dvh-4rem)] bg-[#FAFAF8]">
 
-      {/* ── Top Bar ── */}
-      <div className="border-b border-stone-200 bg-white shrink-0">
-        <div className="flex items-center justify-between max-w-3xl mx-auto px-4 py-3 w-full">
-          <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-amber-950 flex items-center justify-center shadow-sm">
-              <span className="text-lg">☕</span>
-            </div>
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full" />
-          </div>
-          <div>
-            <p className="font-semibold text-stone-800 text-sm leading-tight">AI Barista</p>
-            <p className="text-xs text-emerald-500 font-medium">Online · Siap membantu</p>
-          </div>
-        </div>
-
-        {/* Filter toggle */}
-        <button
-          onClick={() => setShowFilter(v => !v)}
-          className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${hasFilterValue ? "bg-amber-950 text-white border-amber-950" : "bg-white text-stone-600 border-stone-200 hover:border-amber-900 hover:text-amber-900"}`}
-        >
-          <Sparkles className="w-3 h-3" />
-          Preferensi
-          {hasFilterValue && <span className="w-1.5 h-1.5 bg-amber-300 rounded-full" />}
-        </button>
-        </div>
-      </div>
-
-      {/* ── Filter Panel (collapsible) ── */}
-      <AnimatePresence>
-        {showFilter && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="overflow-hidden border-b border-stone-200 bg-stone-50 shrink-0"
-          >
-            <div className="max-w-3xl mx-auto px-4 py-4 space-y-3 w-full">
-              <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Filter Rekomendasi</p>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <Label className="text-xs text-stone-500 mb-1 block">Mood</Label>
-                  <Select value={mood} onValueChange={setMood}>
-                    <SelectTrigger className="h-9 text-xs bg-white border-stone-200">
-                      <SelectValue placeholder="Pilih..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {MOODS.map(m => (
-                        <SelectItem key={m} value={m} className="text-xs capitalize">
-                          {MOOD_EMOJI[m]} {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+        {/* ── Top Bar ── */}
+        <div className="border-b border-stone-200 bg-white shrink-0">
+          <div className="flex items-center justify-between max-w-3xl mx-auto px-4 py-3 w-full">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-amber-950 flex items-center justify-center shadow-sm">
+                  <span className="text-lg">☕</span>
                 </div>
-                <div>
-                  <Label className="text-xs text-stone-500 mb-1 block">Selera Rasa</Label>
-                  <Select value={taste} onValueChange={setTaste}>
-                    <SelectTrigger className="h-9 text-xs bg-white border-stone-200">
-                      <SelectValue placeholder="Pilih..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TASTES.map(t => (
-                        <SelectItem key={t} value={t} className="text-xs capitalize">
-                          {TASTE_EMOJI[t]} {t}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs text-stone-500 mb-1 block">Budget (Rp)</Label>
-                  <Input
-                    type="number"
-                    value={budget}
-                    onChange={e => setBudget(e.target.value)}
-                    placeholder="50000"
-                    className="h-9 text-xs bg-white border-stone-200"
-                  />
-                </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full" />
               </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={sendFromForm}
-                  disabled={isLoading || (!mood && !taste && !budget)}
-                  className="flex-1 h-9 text-xs bg-amber-950 text-white hover:bg-amber-900"
-                >
-                  <Sparkles className="w-3 h-3 mr-1.5" />
-                  Cari Rekomendasi
-                </Button>
-                {hasFilterValue && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-9 w-9 text-stone-400 border-stone-200"
-                    onClick={() => { setMood(""); setTaste(""); setBudget(""); }}
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </Button>
-                )}
+              <div>
+                <p className="font-semibold text-stone-800 text-sm leading-tight">AI Barista</p>
+                <p className="text-xs text-emerald-500 font-medium">Online · Siap membantu</p>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* ── Messages ── */}
-      <div className="flex-1 pb-32 sm:pb-40">
-        <div className="max-w-3xl mx-auto px-4 py-5 space-y-5 w-full">
-
-        {messages.map((m, i) => {
-          const isLastAssistant = m.role === "assistant" && i === messages.length - 1 && !isLoading && i > 0;
-          const mentioned = isLastAssistant ? findMentionedItems(m.content) : [];
-          const isFirst = i === 0 && m.role === "assistant";
-
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className={`flex gap-2.5 ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            {/* Filter toggle */}
+            <button
+              onClick={() => setShowFilter(v => !v)}
+              className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border transition-all ${hasFilterValue ? "bg-amber-950 text-white border-amber-950" : "bg-white text-stone-600 border-stone-200 hover:border-amber-900 hover:text-amber-900"}`}
             >
-              {/* Avatar – assistant */}
-              {m.role === "assistant" && (
-                <div className="w-8 h-8 rounded-full bg-amber-950 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                  <span className="text-sm">☕</span>
-                </div>
-              )}
+              <Sparkles className="w-3 h-3" />
+              Preferensi
+              {hasFilterValue && <span className="w-1.5 h-1.5 bg-amber-300 rounded-full" />}
+            </button>
+          </div>
+        </div>
 
-              <div className="max-w-[78%] space-y-2">
-                {/* Bubble */}
-                <div
-                  className={`rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
-                    m.role === "user"
-                      ? "bg-amber-950 text-white rounded-tr-sm"
-                      : "bg-white text-stone-700 rounded-tl-sm border border-stone-100"
-                  }`}
-                >
-                  {m.role === "assistant" ? (
-                    <div className="prose prose-sm max-w-none prose-p:my-0 prose-headings:text-stone-800 prose-strong:text-stone-800">
-                      <ReactMarkdown>{m.content}</ReactMarkdown>
-                    </div>
-                  ) : (
-                    <p>{m.content}</p>
+        {/* ── Filter Panel (collapsible) ── */}
+        <AnimatePresence>
+          {showFilter && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="overflow-hidden border-b border-stone-200 bg-stone-50 shrink-0"
+            >
+              <div className="max-w-3xl mx-auto px-4 py-4 space-y-3 w-full">
+                <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Filter Rekomendasi</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label className="text-xs text-stone-500 mb-1 block">Mood</Label>
+                    <Select value={mood} onValueChange={setMood}>
+                      <SelectTrigger className="h-9 text-xs bg-white border-stone-200">
+                        <SelectValue placeholder="Pilih..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MOODS.map(m => (
+                          <SelectItem key={m} value={m} className="text-xs capitalize">
+                            {MOOD_EMOJI[m]} {m}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-stone-500 mb-1 block">Selera Rasa</Label>
+                    <Select value={taste} onValueChange={setTaste}>
+                      <SelectTrigger className="h-9 text-xs bg-white border-stone-200">
+                        <SelectValue placeholder="Pilih..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TASTES.map(t => (
+                          <SelectItem key={t} value={t} className="text-xs capitalize">
+                            {TASTE_EMOJI[t]} {t}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-stone-500 mb-1 block">Budget (Rp)</Label>
+                    <Input
+                      type="number"
+                      value={budget}
+                      onChange={e => setBudget(e.target.value)}
+                      placeholder="50000"
+                      className="h-9 text-xs bg-white border-stone-200"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={sendFromForm}
+                    disabled={isLoading || (!mood && !taste && !budget)}
+                    className="flex-1 h-9 text-xs bg-amber-950 text-white hover:bg-amber-900"
+                  >
+                    <Sparkles className="w-3 h-3 mr-1.5" />
+                    Cari Rekomendasi
+                  </Button>
+                  {hasFilterValue && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 text-stone-400 border-stone-200"
+                      onClick={() => { setMood(""); setTaste(""); setBudget(""); }}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
                   )}
                 </div>
-
-                {/* Add-to-cart chips */}
-                {mentioned.length > 0 && (
-                  <div className="space-y-1.5 pt-0.5">
-                    {mentioned.map(item => (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-stone-800 truncate">{item.name}</p>
-                          <p className="text-xs text-amber-700 font-medium mt-0.5">Rp {item.price.toLocaleString("id-ID")}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          onClick={() => handleAdd(item)}
-                          className="h-8 px-3 text-xs bg-amber-950 text-white hover:bg-amber-900 shrink-0 rounded-lg"
-                        >
-                          <Plus className="w-3 h-3 mr-1" /> Tambah
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Quick prompts after first message */}
-                {isFirst && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {QUICK_PROMPTS.map(q => (
-                      <button
-                        key={q}
-                        onClick={() => sendMessage(q)}
-                        className="text-xs px-3 py-1.5 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-amber-800 hover:text-amber-900 hover:bg-amber-50 transition-colors"
-                      >
-                        {q}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Avatar – user */}
-              {m.role === "user" && (
-                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center shrink-0 mt-0.5">
-                  <User className="w-4 h-4 text-stone-500" />
-                </div>
-              )}
-            </motion.div>
-          );
-        })}
-
-        {/* Typing indicator */}
-        <AnimatePresence>
-          {isLoading && messages[messages.length - 1]?.role === "user" && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex gap-2.5 items-end"
-            >
-              <div className="w-8 h-8 rounded-full bg-amber-950 flex items-center justify-center shrink-0 shadow-sm">
-                <span className="text-sm">☕</span>
-              </div>
-              <div className="bg-white border border-stone-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex gap-1.5 items-center">
-                <span className="w-2 h-2 bg-stone-300 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2 h-2 bg-stone-300 rounded-full animate-bounce" style={{ animationDelay: "120ms" }} />
-                <span className="w-2 h-2 bg-stone-300 rounded-full animate-bounce" style={{ animationDelay: "240ms" }} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div ref={endRef} />
-        </div>
-      </div>
+        {/* ── Messages ── */}
+        <div className="flex-1 pb-32 sm:pb-40">
+          <div className="max-w-3xl mx-auto px-4 py-5 space-y-5 w-full">
 
-      {/* ── Input Bar ── */}
-      <div className="sticky bottom-4 sm:bottom-6 z-50 shrink-0 px-3 sm:px-4 w-full">
-        <div className="bg-white/80 backdrop-blur-xl border border-stone-200/60 shadow-[0_8px_40px_rgba(0,0,0,0.08)] rounded-2xl sm:rounded-3xl p-3 sm:p-4 max-w-3xl mx-auto w-full transition-all">
-          <div className="flex gap-2 items-end w-full">
-            <div className="flex-1 relative">
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendFromInput()}
-              placeholder="Cerita mood kamu, atau tanya apa saja..."
-              disabled={isLoading}
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-900/30 focus:border-amber-900/40 transition-all resize-none disabled:opacity-50"
-            />
+            {messages.map((m, i) => {
+              const isLastAssistant = m.role === "assistant" && i === messages.length - 1 && !isLoading && i > 0;
+              const mentioned = isLastAssistant ? findMentionedItems(m.content) : [];
+              const isFirst = i === 0 && m.role === "assistant";
+
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className={`flex gap-2.5 ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  {/* Avatar – assistant */}
+                  {m.role === "assistant" && (
+                    <div className="w-8 h-8 rounded-full bg-amber-950 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                      <span className="text-sm">☕</span>
+                    </div>
+                  )}
+
+                  <div className="max-w-[78%] space-y-2">
+                    {/* Bubble */}
+                    <div
+                      className={`rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${m.role === "user"
+                          ? "bg-amber-950 text-white rounded-tr-sm"
+                          : "bg-white text-stone-700 rounded-tl-sm border border-stone-100"
+                        }`}
+                    >
+                      {m.role === "assistant" ? (
+                        <div className="prose prose-sm max-w-none prose-p:my-0 prose-headings:text-stone-800 prose-strong:text-stone-800">
+                          <ReactMarkdown>{m.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p>{m.content}</p>
+                      )}
+                    </div>
+
+                    {/* Add-to-cart chips */}
+                    {mentioned.length > 0 && (
+                      <div className="space-y-1.5 pt-0.5">
+                        {mentioned.map(item => (
+                          <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold text-stone-800 truncate">{item.name}</p>
+                              <p className="text-xs text-amber-700 font-medium mt-0.5">Rp {item.price.toLocaleString("id-ID")}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => handleAdd(item)}
+                              className="h-8 px-3 text-xs bg-amber-950 text-white hover:bg-amber-900 shrink-0 rounded-lg"
+                            >
+                              <Plus className="w-3 h-3 mr-1" /> Tambah
+                            </Button>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Quick prompts after first message */}
+                    {isFirst && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {QUICK_PROMPTS.map(q => (
+                          <button
+                            key={q}
+                            onClick={() => sendMessage(q)}
+                            className="text-xs px-3 py-1.5 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-amber-800 hover:text-amber-900 hover:bg-amber-50 transition-colors"
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Avatar – user */}
+                  {m.role === "user" && (
+                    <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center shrink-0 mt-0.5">
+                      <User className="w-4 h-4 text-stone-500" />
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+
+            {/* Typing indicator */}
+            <AnimatePresence>
+              {isLoading && messages[messages.length - 1]?.role === "user" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex gap-2.5 items-end"
+                >
+                  <div className="w-8 h-8 rounded-full bg-amber-950 flex items-center justify-center shrink-0 shadow-sm">
+                    <span className="text-sm">☕</span>
+                  </div>
+                  <div className="bg-white border border-stone-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex gap-1.5 items-center">
+                    <span className="w-2 h-2 bg-stone-300 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 bg-stone-300 rounded-full animate-bounce" style={{ animationDelay: "120ms" }} />
+                    <span className="w-2 h-2 bg-stone-300 rounded-full animate-bounce" style={{ animationDelay: "240ms" }} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div ref={endRef} />
           </div>
-          <Button
-            onClick={sendFromInput}
-            disabled={isLoading || !input.trim()}
-            size="icon"
-            className="w-11 h-11 rounded-xl sm:rounded-2xl bg-amber-950 text-white hover:bg-amber-900 shrink-0 disabled:opacity-40 transition-all shadow-sm"
-          >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </Button>
         </div>
-        <p className="text-center text-[10px] text-stone-500 mt-3 font-medium">AI dapat membuat kesalahan. Konfirmasi ketersediaan menu dengan staf kami.</p>
+
+        {/* ── Input Bar ── */}
+        <div className="sticky bottom-4 sm:bottom-6 z-50 shrink-0 px-3 sm:px-4 w-full">
+          <div className="bg-white/80 backdrop-blur-xl border border-stone-200/60 shadow-[0_8px_40px_rgba(0,0,0,0.08)] rounded-2xl sm:rounded-3xl p-3 sm:p-4 max-w-3xl mx-auto w-full transition-all">
+            <div className="flex gap-2 items-end w-full">
+              <div className="flex-1 relative">
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendFromInput()}
+                  placeholder="Cerita mood kamu, atau tanya apa saja..."
+                  disabled={isLoading}
+                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-900/30 focus:border-amber-900/40 transition-all resize-none disabled:opacity-50"
+                />
+              </div>
+              <Button
+                onClick={sendFromInput}
+                disabled={isLoading || !input.trim()}
+                size="icon"
+                className="w-11 h-11 rounded-xl sm:rounded-2xl bg-amber-950 text-white hover:bg-amber-900 shrink-0 disabled:opacity-40 transition-all shadow-sm"
+              >
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              </Button>
+            </div>
+            <p className="text-center text-[10px] text-stone-500 mt-3 font-medium">AI dapat membuat kesalahan. Konfirmasi ketersediaan menu dengan staf kami.</p>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }

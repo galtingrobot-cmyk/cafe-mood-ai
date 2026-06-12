@@ -6,7 +6,7 @@ const nextConfig = {
     return [
       {
         source: '/webhook/:path*',
-        destination: 'http://localhost:5678/webhook/:path*', // Proxy ke n8n
+        destination: `${process.env.N8N_URL || 'http://localhost:5678'}/webhook/:path*`, // Proxy ke n8n (bisa diatur lewat Vercel Env)
       },
     ]
   },
