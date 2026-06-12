@@ -105,7 +105,11 @@ export default function ChatPage() {
     const allMessages = [...messages.filter((m, i) => !(m.role === "assistant" && i === 0)), userMsg];
 
     try {
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const headers: Record<string, string> = { 
+        "Content-Type": "application/json",
+        "bypass-tunnel-reminder": "true",
+        "ngrok-skip-browser-warning": "true"
+      };
       if (process.env.NEXT_PUBLIC_N8N_AUTH_KEY) {
         headers["Authorization"] = `Bearer ${process.env.NEXT_PUBLIC_N8N_AUTH_KEY}`;
       }
