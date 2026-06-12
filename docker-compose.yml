@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: cafe_n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=db.zbumybgsprnpfdqmzbcf.supabase.co
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=postgres
+      - DB_POSTGRESDB_USER=postgres
+      - DB_POSTGRESDB_PASSWORD=8Ballpollpro
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - VITE_N8N_WEBHOOK_URL="http://localhost:5678/webhook-test/a9522953-456a-4ef3-a922-eed6c5a0b25f"
+      - GENERIC_TIMEZONE=Asia/Jakarta
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: always
+
+volumes:
+  n8n_data:
