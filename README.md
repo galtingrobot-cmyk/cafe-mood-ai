@@ -57,6 +57,29 @@ Setelah proses build selesai (muncul keterangan *Ready in ...ms*), buka web brow
 
 ---
 
+## 🤖 Integrasi AI dengan N8N (Workflow Automation)
+
+Aplikasi ini menggunakan **n8n** sebagai *backend* berbasis *workflow* untuk memproses fitur Chat AI. Jika Anda mengembangkan secara lokal dan ingin menghubungkan antarmuka chat dengan n8n, ikuti langkah berikut:
+
+### 1. Menjalankan N8N menggunakan Docker
+Pastikan aplikasi Docker sudah berjalan di sistem Anda. Buka terminal baru dan jalankan *container* n8n lokal (secara *default* akan berjalan di port `5678`):
+```bash
+docker run -it --rm --name n8n -p 5678:5678 -v ~/.n8n:/home/node/.n8n docker.n8n.io/n8nio/n8n
+```
+
+### 2. Mengekspos Localhost ke Publik dengan Cloudflare Tunnel
+Agar webhook n8n lokal Anda dapat menerima *request* dari *frontend* (terutama jika *frontend* di-*deploy* di Vercel), Anda perlu membuat sebuah *tunnel* agar URL `localhost` memiliki alamat publik.
+Jalankan perintah berikut di terminal:
+```bash
+npx cloudflared tunnel --url http://localhost:5678
+```
+*Tunggu beberapa saat, dan Cloudflare akan memberikan URL publik acak (contoh: `https://acak-kata.trycloudflare.com`).*
+
+### 3. Konfigurasi Endpoint Webhook
+Salin URL publik dari Cloudflare tersebut. Gunakan URL tersebut sebagai basis untuk endpoint AI *chat webhook* Anda. Masukkan ke dalam Environment Variables di Vercel atau di file `.env` lokal jika diperlukan, sesuai dengan konfigurasi endpoint yang digunakan di dalam *source code* (contoh: di `src/app/chat/page.tsx`).
+
+---
+
 ## 📖 Cara Penggunaan
 
 1. **Jelajahi Menu**: Scroll halaman ke bawah untuk menikmati efek transisi paralaks, lihat daftar menu kopi dan kue yang tersedia.
