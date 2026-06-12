@@ -1,73 +1,92 @@
-# Welcome to your Lovable project
+# Cafe Mood AI
 
-## Project info
+Selamat datang di project **Cafe Mood AI**! Ini adalah aplikasi web kafe modern yang interaktif, dilengkapi dengan fitur chat AI, animasi 3D, efek scroll yang halus, serta sistem manajemen antrean dan pemesanan.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Fitur Utama
+- **UI/UX Modern**: Desain responsif, animasi halus (Framer Motion), dan efek paralaks.
+- **Elemen 3D**: Integrasi cangkir kopi 3D dan animasi *particle* menggunakan Three.js & React Three Fiber.
+- **Smooth Scrolling**: Scroll mulus dan premium berkat Lenis.
+- **Pemesanan & Antrean (Waiting List)**: Manajemen pesanan real-time berbasis Supabase.
+- **Chat Interaktif**: Antarmuka percakapan bergaya AI.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 📋 Prasyarat Sistem
 
-**Use Lovable**
+Sebelum memulai instalasi, pastikan komputer Anda sudah terinstal perangkat lunak berikut:
+- **Node.js** (Versi 18 atau yang lebih baru) - [Download di sini](https://nodejs.org/)
+- **npm** (Biasanya otomatis terinstal saat Anda menginstal Node.js)
+- Akun atau akses database [Supabase](https://supabase.com) (Untuk fungsi pemesanan dan antrean)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Langkah-langkah Instalasi
 
-**Use your preferred IDE**
+Ikuti panduan berikut secara berurutan untuk menjalankan web ini di komputer lokal Anda:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 1. Clone Repository (Unduh Kode)
+Buka terminal/CMD Anda, lalu jalankan perintah berikut:
+```bash
+git clone https://github.com/galtingrobot-cmyk/cafe-mood-ai.git
+cd cafe-mood-ai
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 2. Install Dependensi
+Jalankan perintah `npm install` untuk mengunduh semua paket pihak ketiga yang dibutuhkan project ini:
+```bash
+npm install
+```
 
-Follow these steps:
+### 3. Konfigurasi Environment (Variabel Lingkungan)
+Project ini membutuhkan koneksi database. Buat sebuah file bernama `.env` di folder utama project (sejajar dengan file `package.json`), lalu isi dengan kredensial Supabase Anda:
+```env
+NEXT_PUBLIC_SUPABASE_URL=masukkan_url_supabase_anda_disini
+NEXT_PUBLIC_SUPABASE_ANON_KEY=masukkan_anon_key_supabase_anda_disini
+```
+*(Catatan: Jika Anda tidak punya kredensial ini, beberapa fitur pemesanan tidak akan bisa menyimpan data)*
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 4. Jalankan Aplikasi Mode Development
+Aplikasi ini sudah dikonfigurasi untuk menggunakan **Turbopack** bawaan Next.js agar *loading* sangat cepat. Jalankan:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### 5. Buka di Browser
+Setelah proses build selesai (muncul keterangan *Ready in ...ms*), buka web browser Anda dan akses:
+👉 **[http://localhost:3000](http://localhost:3000)**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📖 Cara Penggunaan
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. **Jelajahi Menu**: Scroll halaman ke bawah untuk menikmati efek transisi paralaks, lihat daftar menu kopi dan kue yang tersedia.
+2. **Order / Cart**: Klik menu yang diinginkan untuk menambahkannya ke keranjang (Cart), lalu lanjutkan hingga halaman Checkout.
+3. **Admin & Antrean**: Jika pesanan berhasil dibuat, pesanan akan masuk ke sistem *Waiting List*. Anda bisa mengakses `http://localhost:3000/waiting-list` untuk melihat daftar antrean pelanggan, atau ke menu Admin untuk menyelesaikan pesanan.
+4. **Chatbot**: Akses halaman chat untuk mencoba UI perpesanan AI yang ada di dalam aplikasi.
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 📦 Dependensi Utama yang Digunakan
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Aplikasi ini dirancang dengan teknologi web terbaru. Berikut adalah pustaka (library) penting yang menggerakkan web ini:
 
-## How can I deploy this project?
+### ⚡ Framework & Core
+- **[Next.js (v16)](https://nextjs.org/)** - React framework dengan fitur *Server-Side Rendering* dan Turbopack.
+- **[React (v19)](https://react.dev/)** - Library JavaScript utama untuk membangun antarmuka pengguna (UI).
+- **TypeScript** - Untuk mencegah *bug* dengan *static typing*.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### 🎨 Styling & Komponen UI
+- **[Tailwind CSS](https://tailwindcss.com/)** - *Utility-first CSS framework* untuk mempercepat *styling*.
+- **[Radix UI](https://www.radix-ui.com/)** - Kumpulan komponen UI tanpa *style* dasar (headless) untuk membuat *dropdown*, modal, *accordion*, dll secara aksesibel.
+- **[Lucide React](https://lucide.dev/)** & **FontAwesome** - Library kumpulan ikon modern.
+- **clsx** & **tailwind-merge** - Utilitas untuk menggabungkan class CSS dinamis.
 
-## Can I connect a custom domain to my Lovable project?
+### 🎬 Animasi & Interaksi 3D
+- **[Framer Motion](https://www.framer.com/motion/)** - Library animasi *super power* untuk React (membuat efek memudar, melayang, dll).
+- **[Three.js](https://threejs.org/)** & **[@react-three/fiber](https://docs.pmnd.rs/react-three-fiber/)** - Digunakan khusus untuk me-render objek 3D cangkir kopi (Coffee Loader) secara ringan di *browser*.
+- **[Lenis](https://lenis.studiofreight.com/)** - Menambahkan efek *Smooth Scrolling* agar saat layar digulir terasa seperti aplikasi natif kelas atas.
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### 💾 Backend & Pengolahan Data
+- **[Supabase](https://supabase.com/)** - Platform Backend-as-a-Service (PostgreSQL) untuk menyimpan data keranjang, status pesanan, dan menu.
+- **[React Query (@tanstack/react-query)](https://tanstack.com/query/latest)** - Menangani proses *fetching* (pengambilan data dari database) beserta *caching* secara reaktif.
+- **React Hook Form** & **Zod** - Membantu manajemen form (input data) dan memvalidasi kebenaran data yang diketik oleh pengguna.
