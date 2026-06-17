@@ -46,12 +46,12 @@ export default function Index() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative flex items-center justify-center min-h-[60dvh] pt-24 pb-8 overflow-hidden">
+      <section className="relative flex items-center justify-center min-h-[90dvh] pt-24 pb-12 overflow-hidden">
         <motion.div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroCafe.src})`, y: heroY, scale: 1.1 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-background/90 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/30 to-primary z-0" />
         
         <CoffeeSteam />
         
