@@ -6,7 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Copy, Banknote, QrCode } from "lucide-react";
+import { CheckCircle2, Copy, Banknote, QrCode, Timer } from "lucide-react";
 import { toast } from "sonner";
 
 export default function PaymentPage() {
@@ -17,6 +17,7 @@ export default function PaymentPage() {
   const [order, setOrder] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   useEffect(() => {
     if (id && orders) {
@@ -29,6 +30,36 @@ export default function PaymentPage() {
       }
     }
   }, [id, orders, router]);
+
+  useEffect(() => {
+    if (!order || isPaid) return;
+
+    const paymentTimeout = 10 * 60 * 1000; // 10 minutes
+    const orderTime = new Date(order.date).getTime();
+    
+    const updateTime = () => {
+      const now = Date.now();
+      const diff = Math.max(0, orderTime + paymentTimeout - now);
+      setTimeLeft(diff);
+
+      if (diff === 0) {
+        toast.error("Waktu pembayaran habis. Pesanan dibatalkan secara otomatis.");
+        cancelOrder(order.id);
+        router.push("/cart");
+      }
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, [order, isPaid, cancelOrder, router]);
+
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
 
   if (!order) return <><div className="p-8 text-center text-muted-foreground min-h-[60vh] flex items-center justify-center">Memuat data pesanan...</div></>;
 
@@ -169,12 +200,14 @@ export default function PaymentPage() {
   return (
     <>
     <div className="container mx-auto px-4 py-10 max-w-xl animate-in slide-in-from-bottom-4 duration-500 min-h-[calc(100vh-4rem)]">
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-2">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-primary tracking-tight">Selesaikan Pembayaran</h1>
           <p className="text-muted-foreground mt-1 text-sm">Lakukan pembayaran untuk memproses pesanan Anda</p>
         </div>
-        <span className="text-sm font-mono bg-muted/80 px-3 py-1.5 rounded-lg text-muted-foreground font-medium self-start md:self-auto border">ID: {order.id.slice(-8)}</span>
+        <div className="flex flex-col items-start md:items-end gap-2">
+          <span className="text-sm font-mono bg-muted/80 px-3 py-1.5 rounded-lg text-muted-foreground font-medium self-start md:self-auto border">ID: {order.id.slice(-8)}</span>
+        </div>
       </div>
 
       <Card className="p-6 mb-8 shadow-sm border-0 ring-1 ring-black/5 bg-gradient-to-br from-background to-muted/30">
@@ -200,7 +233,11 @@ export default function PaymentPage() {
         {renderPaymentInstructions()}
       </div>
 
-      <div className="flex gap-4 flex-col bg-background p-4 -mx-4 md:mx-0 md:p-0 border-t md:border-0 sticky bottom-0 md:static z-10 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] md:shadow-none">
+      <div className="flex gap-4 flex-col bg-background p-4 -mx-4 md:mx-0 md:p-0 border-t md:border-0 sticky bottom-0 md:static z-10 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)] md:shadow-none mt-2">
+        <div className={`flex justify-center items-center gap-2 text-sm font-medium px-4 py-3 rounded-xl border ${timeLeft < 60000 ? 'bg-destructive/10 text-destructive border-destructive/20 animate-pulse' : 'bg-amber-100 text-amber-800 border-amber-200'}`}>
+          <Timer className="w-5 h-5" />
+          Sisa Waktu Pembayaran: <span className="font-bold text-base">{formatTime(timeLeft)}</span>
+        </div>
         <Button
           onClick={handleConfirm}
           disabled={isProcessing}

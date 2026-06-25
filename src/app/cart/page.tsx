@@ -3,13 +3,41 @@
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Timer } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, total, clearCart } = useCart();
+  const { items, updateQuantity, removeItem, total, clearCart, expiresAt } = useCart();
   const router = useRouter();
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+
+  useEffect(() => {
+    if (!expiresAt) {
+      setTimeLeft(0);
+      return;
+    }
+    const updateTime = () => {
+      const now = Date.now();
+      const diff = Math.max(0, expiresAt - now);
+      setTimeLeft(diff);
+      
+      if (diff === 0 && items.length > 0) {
+        clearCart();
+      }
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt, items.length, clearCart]);
+
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
 
   const handleCheckout = () => {
     router.push("/checkout");
@@ -31,7 +59,15 @@ export default function CartPage() {
   return (
     <>
     <div className="container mx-auto px-4 py-8 max-w-2xl min-h-[calc(100dvh-4rem)]">
-      <h1 className="text-3xl font-bold text-primary mb-6">Keranjang</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h1 className="text-3xl font-bold text-primary">Keranjang</h1>
+        {expiresAt && timeLeft > 0 && (
+          <div className="flex items-center justify-center gap-2 text-sm font-medium text-destructive bg-destructive/10 px-4 py-2 rounded-full w-full sm:w-auto border border-destructive/20 shadow-sm">
+            <Timer className="h-4 w-4 animate-pulse" />
+            <span>Waktu tersisa: {formatTime(timeLeft)}</span>
+          </div>
+        )}
+      </div>
       <div className="space-y-3 mb-6">
         {items.map(item => (
           <Card key={item.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3 sm:p-4">

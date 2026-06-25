@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { MenuItem } from "@/data/menu";
 
 export interface CartItem extends MenuItem {
@@ -32,12 +32,55 @@ interface CartContextType {
   checkout: (opts?: CheckoutOpts) => string | undefined;
   cancelOrder: (orderId: string) => void;
   orders: Order[];
+  expiresAt: number | null;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("cafe-cart-cache");
+      if (stored) {
+        const { items: cachedItems, timestamp } = JSON.parse(stored);
+        if (Date.now() - timestamp < 1200000) { // 20 minutes in ms
+          setItems(cachedItems);
+          setExpiresAt(timestamp + 1200000);
+        } else {
+          localStorage.removeItem("cafe-cart-cache");
+          setExpiresAt(null);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load cart cache", e);
+    }
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      if (items.length > 0) {
+        const timestamp = expiresAt ? expiresAt - 1200000 : Date.now();
+        localStorage.setItem("cafe-cart-cache", JSON.stringify({
+          items,
+          timestamp: timestamp
+        }));
+        if (!expiresAt) {
+          setExpiresAt(timestamp + 1200000);
+        }
+      } else {
+        localStorage.removeItem("cafe-cart-cache");
+        setExpiresAt(null);
+      }
+    } catch (e) {
+      console.error("Failed to save cart cache", e);
+    }
+  }, [items, isInitialized, expiresAt]);
   const [orders, setOrders] = useState<Order[]>(() => {
     try { return JSON.parse(localStorage.getItem("cafe-orders") || "[]"); } catch { return []; }
   });
@@ -90,7 +133,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, checkout, cancelOrder, orders }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, checkout, cancelOrder, orders, expiresAt }}>
       {children}
     </CartContext.Provider>
   );
