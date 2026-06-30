@@ -170,17 +170,17 @@ export default function AdminPage() {
   return (
     <>
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="container mx-auto px-4 py-8 max-w-5xl min-h-[calc(100vh-4rem)]">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-primary">Admin Panel</h1>
-        <Button variant="outline" onClick={handleLogout} className="gap-2">
-          <LogOut className="h-4 w-4" /> Keluar
+      <div className="flex justify-between items-center mb-6 gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">Admin Panel</h1>
+        <Button variant="outline" onClick={handleLogout} className="gap-2 shrink-0">
+          <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Keluar</span>
         </Button>
       </div>
-      <Tabs defaultValue="menu">
-        <TabsList className="mb-6">
-          <TabsTrigger value="menu">Kelola Menu ({menuItems.length})</TabsTrigger>
-          <TabsTrigger value="orders">Data Pesanan {dbOrders.length > 0 && `(${dbOrders.length})`}</TabsTrigger>
-          <TabsTrigger value="feedback">Saran Pelanggan ({feedbacks.length})</TabsTrigger>
+      <Tabs defaultValue="menu" className="w-full">
+        <TabsList className="mb-6 w-full flex flex-wrap h-auto justify-start p-1 bg-muted">
+          <TabsTrigger value="menu" className="flex-1 sm:flex-none">Kelola ({menuItems.length})</TabsTrigger>
+          <TabsTrigger value="orders" className="flex-1 sm:flex-none">Pesanan {dbOrders.length > 0 && `(${dbOrders.length})`}</TabsTrigger>
+          <TabsTrigger value="feedback" className="flex-1 sm:flex-none">Saran ({feedbacks.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="menu">
@@ -189,7 +189,7 @@ export default function AdminPage() {
               <DialogTrigger asChild>
                 <Button><Plus className="h-4 w-4 mr-1" /> Tambah Item</Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-h-[90vh] overflow-y-auto w-[92vw] sm:max-w-[425px] rounded-xl p-4 sm:p-6">
                 <DialogHeader><DialogTitle>{editId ? "Edit Item" : "Tambah Item"}</DialogTitle></DialogHeader>
                 <div className="space-y-4">
                   <div><Label>Nama</Label><Input value={form.name || ""} onChange={e => setForm({ ...form, name: e.target.value })} disabled={isUploading} /></div>
@@ -212,13 +212,13 @@ export default function AdminPage() {
                   </div>
                   <div>
                     <Label>Gambar Menu</Label>
-                    <div className="flex items-center gap-4 mt-1">
+                    <div className="flex items-center gap-3 sm:gap-4 mt-2">
                       {form.image && (
-                        <div className="w-16 h-16 rounded-md overflow-hidden bg-secondary flex-shrink-0">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-md overflow-hidden bg-secondary flex-shrink-0 border">
                           <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
                         </div>
                       )}
-                      <div className="flex-1 space-y-2">
+                      <div className="flex-1 min-w-0 space-y-2">
                         <Input 
                           type="file" 
                           accept="image/*" 
@@ -249,30 +249,32 @@ export default function AdminPage() {
             </Dialog>
           </div>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nama</TableHead>
-                  <TableHead className="hidden md:table-cell">Kategori</TableHead>
-                  <TableHead>Harga</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {menuItems.map(item => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="hidden md:table-cell capitalize">{item.category}</TableCell>
-                    <TableCell>Rp {item.price.toLocaleString("id-ID")}</TableCell>
-                    <TableCell className="text-right space-x-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(item)}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                    </TableCell>
+          <Card className="overflow-hidden border border-border/50">
+            <div className="overflow-x-auto w-full">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nama</TableHead>
+                    <TableHead className="hidden md:table-cell">Kategori</TableHead>
+                    <TableHead>Harga</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {menuItems.map(item => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium max-w-[120px] sm:max-w-none truncate" title={item.name}>{item.name}</TableCell>
+                      <TableCell className="hidden md:table-cell capitalize">{item.category}</TableCell>
+                      <TableCell className="whitespace-nowrap text-sm">Rp {item.price.toLocaleString("id-ID")}</TableCell>
+                      <TableCell className="text-right space-x-0 sm:space-x-1 whitespace-nowrap">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(item)}><Edit className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(item.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </Card>
         </TabsContent>
 

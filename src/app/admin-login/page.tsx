@@ -61,58 +61,58 @@ export default function AdminLogin() {
 
   return (
     <>
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-screen flex items-center justify-center bg-background/50 relative overflow-hidden">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-[100dvh] flex flex-col bg-background/50 relative overflow-x-hidden overflow-y-auto p-4 sm:p-8">
       {/* Decorative background elements */}
-      <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-accent/10 blur-3xl" />
-      <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-3xl" />
+      <div className="fixed -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-accent/10 blur-3xl pointer-events-none" />
+      <div className="fixed -bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
-      <Card className="w-full max-w-md shadow-2xl border-primary/20 backdrop-blur-sm bg-card/90 relative z-10">
-        <CardHeader className="space-y-3 text-center pb-6">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-2">
-            <Lock className="w-8 h-8 text-primary" />
+      <Card className="w-full max-w-md m-auto shadow-2xl border-primary/20 backdrop-blur-sm bg-card/90 relative z-10">
+        <CardHeader className="space-y-2 sm:space-y-3 text-center pb-4 sm:pb-6">
+          <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mb-1 sm:mb-2">
+            <Lock className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-serif font-bold text-primary">Portal Admin</CardTitle>
-          <CardDescription className="text-base">
+          <CardTitle className="text-2xl sm:text-3xl font-serif font-bold text-primary">Portal Admin</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Kawasan terbatas. Silakan masuk untuk mengelola Kopi Mood.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Admin</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="email" className="text-xs sm:text-sm">Email Admin</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="admin@kopimood.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12"
+                className="h-10 sm:h-12 text-sm sm:text-base"
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Kata Sandi</Label>
+            <div className="space-y-1 sm:space-y-2">
+              <Label htmlFor="password" className="text-xs sm:text-sm">Kata Sandi</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12"
+                className="h-10 sm:h-12 text-sm sm:text-base"
                 required
               />
             </div>
             <Button
               type="submit"
-              className="w-full h-12 text-base font-semibold"
+              className="w-full h-10 sm:h-12 text-sm sm:text-base font-semibold mt-2"
               disabled={loading}
             >
               {loading ? "Memverifikasi..." : "Masuk ke Dashboard"}
             </Button>
           </form>
 
-          <div className="mt-8 text-center flex items-center justify-center text-sm text-muted-foreground gap-2">
-            <Coffee className="w-4 h-4" />
+          <div className="mt-6 sm:mt-8 text-center flex items-center justify-center text-xs sm:text-sm text-muted-foreground gap-1 sm:gap-2">
+            <Coffee className="w-3 h-3 sm:w-4 sm:h-4" />
             <span>Kopi Mood Internal System</span>
           </div>
         </CardContent>

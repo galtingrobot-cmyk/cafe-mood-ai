@@ -8,20 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CreditCard, Wallet, Banknote, QrCode } from "lucide-react";
+import { CreditCard, QrCode } from "lucide-react";
 import { toast } from "sonner";
 
 const methods = [
-  { value: "Tunai", label: "Tunai", icon: Banknote },
   { value: "QRIS", label: "QRIS", icon: QrCode },
   { value: "Transfer Bank", label: "Transfer Bank", icon: CreditCard },
-  { value: "E-Wallet", label: "E-Wallet", icon: Wallet },
 ];
 
 export default function CheckoutPage() {
   const { items, total, checkout } = useCart();
   const router = useRouter();
-  const [paymentMethod, setPaymentMethod] = useState("Tunai");
+  const [paymentMethod, setPaymentMethod] = useState("QRIS");
   const [customerName, setCustomerName] = useState("");
   const [processing, setProcessing] = useState(false);
 
